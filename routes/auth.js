@@ -8,14 +8,15 @@ const router = express.Router();
 
 // Register Route
 router.post("/register", async (req, res) => {
-    const token = jwt.sign({ userId: User._id }, process.env.JWT_SECRET, {
-    expiresIn: "1h",
-});
+  const token = jwt.sign({ userId: User._id }, process.env.JWT_SECRET, {
+      expiresIn: "1h",
+  });
   const { name, email, password } = req.body;
   try {
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return res.status(200).json({resultType:"success", message: "User already exists",token });
+      return res.status(200).json({resultType:"fail", message: "User already exists",token });
+
     }
 
     const newUser = new User({ name, email, password });
@@ -36,12 +37,12 @@ router.post("/login", async (req, res) => {
       });
     const user = await User.findOne({ email });
     if (!user) {
-      return res.status(200).json({ resultType:"fail",message: "Invalid credentials",token });
+      return res.status(200).json({ resultType:"fail",message: "Invalid email",token });
     }
 
     const isMatch = await user.comparePassword(password);
     if (!isMatch) {
-      return res.status(200).json({resultType:"fail", message: "Invalid credentials",token });
+      return res.status(200).json({resultType:"fail", message: "Invalid password",token });
     }
 
     
